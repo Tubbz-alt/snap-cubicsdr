@@ -1,0 +1,148 @@
+name: cubicsdr-master-casept
+version: 'master'
+summary:  A cross-platform Software-Defined Radio application.
+description: |
+  CubicSDR is a cross-platform Software-Defined Radio application
+  which allows you to navigate the radio spectrum and demodulate any signals you might discover.
+  It currently includes several common analog demodulation schemes such as AM and FM and will support
+  digital modes in the future.  Many digital decoding applications are available now that can use
+  the analog outputs to process digital signals by “piping” the data from CubicSDR to another program
+  using software like Soundflower, Jack Audio or VBCable.
+  Please remember to run sudo snap connect cubicsdr-master-casept:raw-usb core:raw-usb
+  in order to grant access to your SDR.
+
+
+grade: stable 
+confinement: strict 
+
+
+apps:
+  cubicsdr:
+    command: desktop-launch $SNAP/bin/wrapper 
+    plugs: [x11, pulseaudio, alsa, opengl, raw-usb, network]
+
+
+parts:
+  liquid-dsp:
+    plugin: autotools
+    source: https://github.com/jgaeddert/liquid-dsp.git
+    build-packages: [build-essential]
+
+  glu:
+    plugin: autotools
+    source: https://mesa.freedesktop.org/archive/glu/glu-9.0.0.tar.bz2
+    build-packages: [build-essential]
+
+  soapysdr:
+    plugin: cmake
+    configflags: [-DCMAKE_BUILD_TYPE=Release -DSOAPY_SDR_ROOT_ENV=SNAP]
+    source: https://github.com/pothosware/SoapySDR.git
+    build-packages: [build-essential]
+
+  hamlib:
+    plugin: autotools
+    source: https://github.com/N0NB/hamlib.git
+    build-packages:
+      - build-essential
+      #TODO: Bypass having to install this (it's just needed to generate documentation)
+      - texinfo
+
+  soapyaudio:
+    plugin: cmake
+    source: https://github.com/pothosware/SoapyAudio.git
+    build-packages: [librtaudio-dev]
+    stage-packages: [librtaudio4v5]
+    after: [hamlib, soapysdr]
+
+  soapyrtlsdr:
+    plugin: cmake
+    configflags: [-DCMAKE_BUILD_TYPE=Release]
+    source: https://github.com/pothosware/SoapyRTLSDR.git
+    build-packages: [librtlsdr-dev, libusb-1.0-0-dev]
+    stage-packages: [librtlsdr0, libusb-1.0-0]
+    after: [soapysdr]
+
+  soapyredpitaya:
+    plugin: cmake
+    source: https://github.com/pothosware/SoapyRedPitaya.git
+    after: [soapysdr]
+
+  #Currently disabled, requires proprietary driver
+  # which is distributed as a *.run file
+# soapysdrplay:
+#   plugin: cmake
+#   source: https://github.com/pothosware/SoapySDRPlay.git
+#   configflags: [-DCMAKE_BUILD_TYPE=Release]
+#   after: [soapysdr]
+
+  libbladerf:
+    plugin: cmake
+    source: https://github.com/Nuand/bladeRF.git
+    build-packages: [libusb-1.0-0-dev, build-essential] 
+    stage-packages: [libusb-1.0-0]
+
+  soapybladerf:
+    plugin: cmake
+    source: https://github.com/pothosware/SoapyBladeRF.git
+    configflags: [-DCMAKE_BUILD_TYPE=Release]
+    after: [soapysdr, libbladerf]
+
+  libhackrf:
+    plugin: cmake
+    source: https://github.com/mossmann/hackrf.git 
+    build-packages: [libusb-1.0-0-dev, pkg-config, libfftw3-dev, build-essential]
+    stage-packages: [libusb-1.0-0]
+    #The host/ directory of the repo contains the actual driver
+    source-subdir: host
+
+  soapyhackrf:
+    plugin: cmake
+    source: https://github.com/pothosware/SoapyHackRF.git
+    # Soapyhackrf only looks for includes in system paths and own dir, so we
+    # have to copy them over ourselves
+    prepare: |
+      mkdir -p ../libhackrf/src/
+      cp -r ../../libhackrf/install/include/libhackrf/* ../libhackrf/src/
+    configflags: [-DCMAKE_BUILD_TYPE=Release]
+    after: [soapysdr, libhackrf]
+
+  libairspy:
+    plugin: cmake
+    source: https://github.com/airspy/host.git
+    build-packages: [libusb-1.0-0-dev, pkg-config]
+    stage-packages: [libusb-1.0-0]
+
+  soapyairspy:
+    plugin: cmake
+    source: https://github.com/pothosware/SoapyAirspy.git
+    configflags: [-DCMAKE_BUILD_TYPE=Release]
+    after: [soapysdr, libairspy]
+  
+  soapyremote:
+    plugin: cmake
+    source: https://github.com/pothosware/SoapyRemote.git
+    after: [soapysdr]
+    configflags: [-DCMAKE_BUILD_TYPE=Release]
+
+  cubicsdr:
+    plugin: cmake
+    source: https://github.com/cjcliffe/CubicSDR.git
+    configflags:
+      - -DUSE_HAMLIB=1
+    build-packages:
+      - libwxgtk3.0-dev
+      - libpulse-dev
+    # The install script drops fonts into the wrong spot
+    install: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/bin/
+      cp -r x*/* $SNAPCRAFT_PART_INSTALL/usr/bin/ 
+    after:
+      - soapysdr
+      - hamlib
+      - liquid-dsp
+      - desktop-gtk2
+
+  wrapper:
+    plugin: copy
+    files:
+      wrapper: bin/wrapper

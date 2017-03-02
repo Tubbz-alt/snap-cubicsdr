@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=cubicsdr-master-casept.cubicsdr %u
+Icon=${SNAP}/meta/gui/cubicsdr.png
+Terminal=false
+Name=CubicSDR
+GenericName=CubicSDR
+Comment=Software-Defined Radio Application
+Categories=Science;HamRadio;DataVisualization;
