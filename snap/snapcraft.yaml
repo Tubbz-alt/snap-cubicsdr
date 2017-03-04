@@ -1,5 +1,7 @@
-name: cubicsdr-master-casept
-version: 'master'
+name: cubicsdr-casept
+# Uncomment if building from git
+#version: 'master'
+version: '0.2.1-alpha'
 summary:  A cross-platform Software-Defined Radio application.
 description: |
   CubicSDR is a cross-platform Software-Defined Radio application
@@ -8,7 +10,7 @@ description: |
   digital modes in the future.  Many digital decoding applications are available now that can use
   the analog outputs to process digital signals by “piping” the data from CubicSDR to another program
   using software like Soundflower, Jack Audio or VBCable.
-  Please remember to run sudo snap connect cubicsdr-master-casept:raw-usb core:raw-usb
+  Please remember to run sudo snap connect cubicsdr-casept:raw-usb core:raw-usb
   in order to grant access to your SDR.
 
 
@@ -18,7 +20,7 @@ confinement: strict
 
 apps:
   cubicsdr:
-    command: desktop-launch $SNAP/bin/wrapper 
+    command: desktop-launch $SNAP/bin/wrapper $SNAP/usr/bin/CubicSDR
     plugs: [x11, pulseaudio, alsa, opengl, raw-usb, network]
 
 
@@ -126,7 +128,9 @@ parts:
 
   cubicsdr:
     plugin: cmake
-    source: https://github.com/cjcliffe/CubicSDR.git
+    source: https://github.com/cjcliffe/CubicSDR/archive/0.2.1-alpha1.tar.gz
+    # Uncomment to build latest cubicsdr from git
+    #source: https://github.com/cjcliffe/CubicSDR.git
     configflags:
       - -DUSE_HAMLIB=1
     build-packages:
