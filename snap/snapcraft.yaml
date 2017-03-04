@@ -2,7 +2,7 @@ name: cubicsdr-casept
 # Uncomment if building from git
 #version: 'master'
 version: '0.2.1-alpha'
-summary:  A cross-platform Software-Defined Radio application.
+summary:  A Software-Defined Radio application. INSTALL NOTES IN FULL DESCRIPTION.
 description: |
   CubicSDR is a cross-platform Software-Defined Radio application
   which allows you to navigate the radio spectrum and demodulate any signals you might discover.
@@ -10,7 +10,7 @@ description: |
   digital modes in the future.  Many digital decoding applications are available now that can use
   the analog outputs to process digital signals by “piping” the data from CubicSDR to another program
   using software like Soundflower, Jack Audio or VBCable.
-  Please remember to run sudo snap connect cubicsdr-casept:raw-usb core:raw-usb
+  PLEASE REMEMBER TO RUN sudo snap connect cubicsdr-casept:raw-usb core:raw-usb
   in order to grant access to your SDR.
 
 
