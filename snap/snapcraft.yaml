@@ -20,7 +20,9 @@ confinement: strict
 
 apps:
   cubicsdr:
-    command: desktop-launch $SNAP/bin/wrapper $SNAP/usr/bin/CubicSDR
+    environment:
+      SOAPY_SDR_ROOT: /snap/cubicsdr-casept/current/
+    command: desktop-launch $SNAP/usr/bin/CubicSDR
     plugs: [x11, pulseaudio, alsa, opengl, raw-usb, network]
 
 
@@ -145,8 +147,3 @@ parts:
       - hamlib
       - liquid-dsp
       - desktop-gtk2
-
-  wrapper:
-    plugin: copy
-    files:
-      wrapper: bin/wrapper

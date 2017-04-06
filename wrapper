@@ -1,4 +1,0 @@
-#!/bin/sh
-#Make sure SoapySDR finds its modules
-export SOAPY_SDR_ROOT=$SNAP
-exec "$@"
