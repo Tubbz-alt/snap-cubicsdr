@@ -1,7 +1,7 @@
 name: cubicsdr-casept
 # Uncomment if building from git
 #version: 'master'
-version: '0.2.1-alpha'
+version: '0.2.2'
 summary:  A Software-Defined Radio application. INSTALL NOTES IN FULL DESCRIPTION.
 description: |
   CubicSDR is a cross-platform Software-Defined Radio application
@@ -130,7 +130,7 @@ parts:
 
   cubicsdr:
     plugin: cmake
-    source: https://github.com/cjcliffe/CubicSDR/archive/0.2.1-alpha1.tar.gz
+    source: https://github.com/cjcliffe/CubicSDR/archive/0.2.2.tar.gz
     # Uncomment to build latest cubicsdr from git
     #source: https://github.com/cjcliffe/CubicSDR.git
     configflags:
